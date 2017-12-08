@@ -38,7 +38,7 @@ router.get('/', function(req, res) {
         
         if (start > fileSize - 1) {
             start = fileSize -1;
-        }
+        } 
 
         console.log('start end');
         console.log(start);
