@@ -1,10 +1,20 @@
 const express = require('express');
-const fs = require('fs');
+const fs = require('fs-extra');
 const path = require('path');
 var bodyParser = require('body-parser');
 const app = express();
 var multer = require('multer');
+var cors = require('cors');
+var mongoose = require('mongoose');
 
+console.log('this is happening');
+var counter = 0;
+// var corsOptions = {
+//   origin: 'http://localhost:4200',
+//   credentials: true
+// }
+
+// app.use(cors(corsOptions));
 
 app.use(function(req, res, next) { //allow cross origin requests
     res.setHeader("Access-Control-Allow-Methods", "POST, PUT, OPTIONS, DELETE, GET");
@@ -16,13 +26,24 @@ app.use(function(req, res, next) { //allow cross origin requests
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.json());
 
+
+
+mongoose.connect('mongodb://localhost/conduit');
+mongoose.set('debug', true);
+
+require('./models/Video');
+require('./models/Settings');
+
+app.use(require('./routes'));
+
+
 var storage = multer.diskStorage({ //multers disk storage settings
     destination: function (req, file, cb) {
         cb(null, './assets/');
     },
     filename: function (req, file, cb) {
         var datetimestamp = Date.now();
-        cb(null, file.fieldname + '-' + datetimestamp + '.' + file.originalname.split('.')[file.originalname.split('.').length -1]);
+        cb(null, 'video_' + counter + '_' + file.originalname); 
     }
 });
 
@@ -30,49 +51,31 @@ var upload = multer({ //multer settings
                         storage: storage
                     }).single('file');
 
+var Video = mongoose.model('Video');
+var Settings = mongoose.model('Settings');
 
-app.get('/video', function(req, res) {
-  const path = 'assets/sample.mp4'
-  const stat = fs.statSync(path)
-  const fileSize = stat.size
-  const range = req.headers.range
-
-  if (range) {
-    const parts = range.replace(/bytes=/, "").split("-")
-    const start = parseInt(parts[0], 10)
-    const end = parts[1]
-      ? parseInt(parts[1], 10)
-      : fileSize-1
-
-    const chunksize = (end-start)+1
-    const file = fs.createReadStream(path, {start, end})
-    const head = {
-      'Content-Range': `bytes ${start}-${end}/${fileSize}`,
-      'Accept-Ranges': 'bytes',
-      'Content-Length': chunksize,
-      'Content-Type': 'video/mp4',
-    }
-
-    res.writeHead(206, head)
-    file.pipe(res)
-  } else {
-    const head = {
-      'Content-Length': fileSize,
-      'Content-Type': 'video/mp4',
-    }
-    res.writeHead(200, head)
-    fs.createReadStream(path).pipe(res)
-  }
-});
-
-app.post('/upload', function(req, res) {
+app.post('/video/upload', cors(), function(req, res) {
     upload(req,res,function(err){
-        console.log(req.file);
-        if(err){
-             res.json({error_code:1,err_desc:err});
-             return;
-        }
-         res.json({error_code:0,err_desc:null});
+        Settings.find(function(err, settings) {
+          var currentSettings;
+          if (settings.length == 0) {
+            currentSettings = new Settings();
+          } else {
+            currentSettings = settings[0];
+            fs.removeSync(currentSettings.video);
+          }
+
+          currentSettings.video = req.file.destination + 'video_' + counter + '_' + req.file.originalname;
+          currentSettings.save(function(err, settings) {
+            if(err){
+              res.json({error_code:1,err_desc:err});
+              return;
+            }
+            counter = counter + 1;
+            console.log('new video file');
+            res.json({error_code:0,err_desc:null});
+          })
+        })
     });
 });
 
