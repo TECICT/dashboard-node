@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 
 var SettingsSchema = new mongoose.Schema({
-  video: {type: String, default: './'},
+  video: {type: String, default: './Basic_presentation.mp4'},
   location_weather: {type: String, default: 'Brussels'},
   location_maps: {type: String, default: 'Grimbergen'}
 }, {timestamps: true});
