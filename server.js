@@ -9,7 +9,7 @@ var mongoose = require('mongoose');
 
 var counter = 0;
 
-var mongoDB = 'mongodb://dashboard:Inttos1850**@ds135916.mlab.com:35916/dashboard';
+var mongoDB = 'mongodb://localhost/conduit';
 
 app.use(function(req, res, next) { //allow cross origin requests
     res.setHeader("Access-Control-Allow-Methods", "POST, PUT, OPTIONS, DELETE, GET");
