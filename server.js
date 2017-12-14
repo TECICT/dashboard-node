@@ -7,14 +7,9 @@ var multer = require('multer');
 var cors = require('cors');
 var mongoose = require('mongoose');
 
-console.log('this is happening');
 var counter = 0;
-// var corsOptions = {
-//   origin: 'http://localhost:4200',
-//   credentials: true
-// }
 
-// app.use(cors(corsOptions));
+var mongoDB = 'mongodb://dashboard:Inttos1850**@ds135916.mlab.com:35916/dashboard';
 
 app.use(function(req, res, next) { //allow cross origin requests
     res.setHeader("Access-Control-Allow-Methods", "POST, PUT, OPTIONS, DELETE, GET");
@@ -25,11 +20,16 @@ app.use(function(req, res, next) { //allow cross origin requests
 });
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.json());
+ 
 
 
-
-mongoose.connect('mongodb://localhost/conduit');
+mongoose.connect(mongoDB, {
+  useMongoClient: true
+});
+mongoose.Promise = global.Promise;
+var db = mongoose.connection;
 mongoose.set('debug', true);
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 require('./models/Video');
 require('./models/Settings');
