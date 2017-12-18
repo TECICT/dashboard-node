@@ -4,7 +4,7 @@ var multer = require('multer');
 var cors = require('cors');
 var mongoose = require('mongoose');
 var Settings = mongoose.model('Settings');
-
+const path_var = require('path');
 
 router.get('/', function(req, res) {
   Settings.find(function(err, settings) {
@@ -15,7 +15,7 @@ router.get('/', function(req, res) {
       currentSettings = settings[0];
     }
 
-    var path = currentSettings.video;
+    var path = path_var.join(__dirname, '../' + currentSettings.video);
     var stat;
     var fileSize;
     try {
