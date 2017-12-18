@@ -15,15 +15,16 @@ router.get('/', function(req, res) {
       currentSettings = settings[0];
     }
 
-    const path = currentSettings.video;
+    var path = currentSettings.video;
     var stat;
+    var fileSize;
     try {
       stat = fs.statSync(path);
+      fileSize = stat.size;
     }
     catch(e) {
       console.log('error getting video file: ' + e);
     }
-    const fileSize = stat.size;
     const range = req.headers.range;
 
     if (range) {
@@ -41,21 +42,22 @@ router.get('/', function(req, res) {
       const chunksize = (end-start)+1;
       var file;
       try {
-        file = fs.createReadStream(path, {start, end})
-      }
+        file = fs.createReadStream(path, {start, end});
+        const head = {
+          'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+          'Accept-Ranges': 'bytes',
+          'Content-Length': chunksize,
+          'Content-Type': 'video/mp4',
+        }
+
+        res.writeHead(206, head)
+        file.pipe(res)
+        }
       catch(e) {
         console.log('file was not found' + e);
       }
       
-      const head = {
-        'Content-Range': `bytes ${start}-${end}/${fileSize}`,
-        'Accept-Ranges': 'bytes',
-        'Content-Length': chunksize,
-        'Content-Type': 'video/mp4',
-      }
-
-      res.writeHead(206, head)
-      file.pipe(res)
+      
     } else {
       const head = {
         'Content-Length': fileSize,
