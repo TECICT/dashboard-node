@@ -65,7 +65,7 @@ app.post('/video/upload', cors(), function(req, res) {
             fs.removeSync(currentSettings.video);
           }
 
-          currentSettings.video = req.file.destination + 'video_' + counter + '_' + req.file.originalname;
+          currentSettings.video = 'assets/video_' + counter + '_' + req.file.originalname;
           currentSettings.save(function(err, settings) {
             if(err){
               res.json({error_code:1,err_desc:err});
