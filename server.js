@@ -19,6 +19,7 @@ app.use(function(req, res, next) { //allow cross origin requests
     next();
 });
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static('assets'));
 app.use(bodyParser.json());
  
 
