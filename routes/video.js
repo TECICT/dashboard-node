@@ -6,7 +6,9 @@ var mongoose = require('mongoose');
 var Settings = mongoose.model('Settings');
 const path_var = require('path');
 
-router.get('/', function(req, res) {
+router.get('/:videofile', function(req, res) {
+  console.log('getting a request');
+  console.log(req.params.videofile);
   Settings.find(function(err, settings) {
     var currentSettings;
     if (settings.length == 0) {
@@ -14,8 +16,8 @@ router.get('/', function(req, res) {
     } else {
       currentSettings = settings[0];
     }
-
-    var path = path_var.join(__dirname, '../' + currentSettings.video);
+    var path = path_var.join(__dirname, '../assets/' + req.params.videofile);
+    
     var stat;
     var fileSize;
     try {
