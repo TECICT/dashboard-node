@@ -4,7 +4,7 @@ const https = require('https');
 var parseString = require('xml2js').parseString;
 
 router.get('/', function(req, res) {
-  https.get('https://www.vrt.be/vrtnws/nl.rss.breaking.xml', (resp) => {
+  https.get('https://www.vrt.be/vrtnws/nl.rss.headlines.xml', (resp) => {
 
     let data = '';
     // A chunk of data has been recieved.
