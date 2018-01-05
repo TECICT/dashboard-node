@@ -1,7 +1,7 @@
 var router = require('express').Router();
 var mongoose = require('mongoose');
 var Settings = mongoose.model('Settings');
-
+var auth = require('./auth');
 
 router.get('/', function(req, res) {
   Settings.find(function(err, settings) {
@@ -15,7 +15,7 @@ router.get('/', function(req, res) {
   });
 });
 
-router.put('/', function(req, res) {
+router.put('/', auth.required, function(req, res) {
   Settings.find(function(err, settings) {
     var currentSettings;
     console.log('put');

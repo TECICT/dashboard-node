@@ -6,15 +6,16 @@ const app = express();
 var multer = require('multer');
 var cors = require('cors');
 var mongoose = require('mongoose');
+var passport = require('passport');
 
 var counter = 0;
 
-var mongoDB = 'mongodb://localhost/conduit';
+var mongoDB = 'mongodb://localhost/dashboard';
 
 app.use(function(req, res, next) { //allow cross origin requests
     res.setHeader("Access-Control-Allow-Methods", "POST, PUT, OPTIONS, DELETE, GET");
     res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
     res.header("Access-Control-Allow-Credentials", true);
     next();
 });
@@ -34,6 +35,8 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 require('./models/Video');
 require('./models/Settings');
+require('./models/User');
+require('./config/passport');
 
 app.use(require('./routes'));
 
@@ -57,6 +60,8 @@ var Settings = mongoose.model('Settings');
 
 app.post('/video/upload', cors(), function(req, res) {
     upload(req,res,function(err){
+        console.log('helloo');
+        console.log(req);
         Settings.find(function(err, settings) {
           var currentSettings;
           if (settings.length == 0) {
