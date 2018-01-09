@@ -74,22 +74,4 @@ router.post('/users/login', function(req, res, next){
   })(req, res, next);
 });
 
-router.post('/users', function(req, res, next){
-  User.find().then(function(users){
-    var user = new User();
-    if(users.length == 0){ user.role = 'admin' }
-    else { user.role = 'guest' }
-    user.username = req.body.user.username;
-    user.email = req.body.user.email;
-    user.firstname = req.body.user.firstname;
-    user.lastname = req.body.user.lastname;
-    user.setPassword(req.body.user.password);
-
-    user.save().then(function(){
-      return res.json({user: user.toAuthJSON()});
-    }).catch(next);
-    
-  }).catch(next);
-});
-
 module.exports = router;
