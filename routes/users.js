@@ -12,6 +12,18 @@ router.get('/user', auth.required, function(req, res, next){
   }).catch(next);
 });
 
+router.get('/users', auth.required, function(req, res, next){
+  User.find().then(function(users){
+    user_json = { users: []}
+    var i = 0;
+    for (user of users) {
+      user_json.users[i] = user.toProfileJSONFor();
+      i++;
+    }
+    return res.json(user_json);
+  }).catch(next);
+});
+
 router.put('/user', auth.required, function(req, res, next){
   User.findById(req.payload.id).then(function(user){
     if(!user){ return res.sendStatus(401); }
@@ -23,8 +35,17 @@ router.put('/user', auth.required, function(req, res, next){
     if(typeof req.body.user.email !== 'undefined'){
       user.email = req.body.user.email;
     }
-    if(typeof req.body.user.password !== 'undefined'){
+    if(typeof req.body.user.firstname !== 'undefined'){
+      user.firstname = req.body.user.firstname;
+    }
+    if(typeof req.body.user.lastname !== 'undefined'){
+      user.lastname = req.body.user.lastname;
+    }
+    if(typeof req.body.user.password !== 'undefined' && req.body.user.password !== ""){
       user.setPassword(req.body.user.password);
+    }
+    if(typeof req.body.user.role !== 'undefined'){
+      user.role = req.body.user.role;
     }
     return user.save().then(function(){
       return res.json({user: user.toAuthJSON()});
@@ -54,14 +75,20 @@ router.post('/users/login', function(req, res, next){
 });
 
 router.post('/users', function(req, res, next){
-  var user = new User();
+  User.find().then(function(users){
+    var user = new User();
+    if(users.length == 0){ user.role = 'admin' }
+    else { user.role = 'guest' }
+    user.username = req.body.user.username;
+    user.email = req.body.user.email;
+    user.firstname = req.body.user.firstname;
+    user.lastname = req.body.user.lastname;
+    user.setPassword(req.body.user.password);
 
-  user.username = req.body.user.username;
-  user.email = req.body.user.email;
-  user.setPassword(req.body.user.password);
-
-  user.save().then(function(){
-    return res.json({user: user.toAuthJSON()});
+    user.save().then(function(){
+      return res.json({user: user.toAuthJSON()});
+    }).catch(next);
+    
   }).catch(next);
 });
 

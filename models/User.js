@@ -7,8 +7,11 @@ var secret = require('../config').secret;
 var UserSchema = new mongoose.Schema({
   username: {type: String, lowercase: true, unique: true, required: [true, "can't be blank"], match: [/^[a-zA-Z0-9]+$/, 'is invalid'], index: true},
   email: {type: String, lowercase: true, unique: true, required: [true, "can't be blank"], match: [/\S+@\S+\.\S+/, 'is invalid'], index: true},
+  firstname: {type: String},
+  lastname: {type: String},
   hash: String,
-  salt: String
+  salt: String,
+  role: { type: String,  enum: ['admin', 'guest'], default: 'guest'}
 }, {timestamps: true});
 
 UserSchema.plugin(uniqueValidator, {message: 'is already taken.'});
@@ -39,13 +42,19 @@ UserSchema.methods.toAuthJSON = function(){
   return {
     username: this.username,
     email: this.email,
+    role: this.role,
+    firstname: this.firstname,
+    lastname: this.lastname,
     token: this.generateJWT()
   };
 };
 
-UserSchema.methods.toProfileJSONFor = function(user){
+UserSchema.methods.toProfileJSONFor = function(){
   return {
     username: this.username,
+    firstname: this.firstname,
+    lastname: this.lastname,
+    role: this.role
   };
 };
 
