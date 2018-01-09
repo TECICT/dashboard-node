@@ -13,6 +13,9 @@ var counter = 0;
 var mongoDB = 'mongodb://localhost/dashboard';
 
 app.use(function(req, res, next) { //allow cross origin requests
+    if (req.method == 'OPTIONS') {
+        res.send(200);
+    }
     res.setHeader("Access-Control-Allow-Methods", "POST, PUT, OPTIONS, DELETE, GET");
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
@@ -83,23 +86,6 @@ app.post('/video/upload', cors(), function(req, res) {
           })
         })
     });
-});
-
-app.post('/users', function(req, res, next){
-  User.find().then(function(users){
-    var user = new User();
-    if(users.length == 0){ user.role = 'admin' }
-    else { user.role = 'guest' }
-    user.username = req.body.user.username;
-    user.email = req.body.user.email;
-    user.firstname = req.body.user.firstname;
-    user.lastname = req.body.user.lastname;
-    user.setPassword(req.body.user.password);
-
-    user.save().then(function(){
-      return res.json({user: user.toAuthJSON()});
-    }).catch(next);
-  }).catch(next);
 });
 
 // test
