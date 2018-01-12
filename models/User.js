@@ -54,6 +54,7 @@ UserSchema.methods.toProfileJSONFor = function(){
     username: this.username,
     firstname: this.firstname,
     lastname: this.lastname,
+    email: this.email,
     role: this.role
   };
 };

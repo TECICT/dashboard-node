@@ -4,6 +4,17 @@ var passport = require('passport');
 var User = mongoose.model('User');
 var auth = require('./auth');
 
+router.param('username', function(req, res, next, username) {
+  User.findOne({ username: username})
+    .then(function (user) {
+      if (!user) { return res.sendStatus(404); }
+
+      req.guestUser = user;
+
+      return next();
+    }).catch(next);
+});
+
 router.get('/user', auth.required, function(req, res, next){
   User.findById(req.payload.id).then(function(user){
     if(!user){ return res.sendStatus(401); }
@@ -88,6 +99,18 @@ router.post('/users', function(req, res, next){
     user.save().then(function(){
       return res.json({user: user.toAuthJSON()});
     }).catch(next);
+  }).catch(next);
+});
+
+router.get('/user/makeadmin/:username', auth.required, function(req, res, next) {
+  console.log(req.payload);
+  User.findById(req.payload.id).then(function(user){
+    if(!user){ return res.sendStatus(401);}
+    if(user.role !== 'admin'){ return res.sendStatus(401);}
+    req.guestUser.role = 'admin';
+    req.guestUser.save().then(function() {
+      return res.json({user: req.guestUser});
+    }) 
   }).catch(next);
 });
 
