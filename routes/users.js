@@ -114,4 +114,16 @@ router.get('/user/makeadmin/:username', auth.required, function(req, res, next) 
   }).catch(next);
 });
 
+router.get('/user/makeguest/:username', auth.required, function(req, res, next) {
+  console.log(req.payload);
+  User.findById(req.payload.id).then(function(user){
+    if(!user){ return res.sendStatus(401);}
+    if(user.role !== 'admin'){ return res.sendStatus(401);}
+    req.guestUser.role = 'guest';
+    req.guestUser.save().then(function() {
+      return res.json({user: req.guestUser});
+    }) 
+  }).catch(next);
+});
+
 module.exports = router;
