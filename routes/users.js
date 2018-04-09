@@ -110,7 +110,7 @@ router.get('/user/makeadmin/:username', auth.required, function(req, res, next) 
     req.guestUser.role = 'admin';
     req.guestUser.save().then(function() {
       return res.json({user: req.guestUser});
-    }) 
+    })
   }).catch(next);
 });
 
@@ -122,7 +122,7 @@ router.get('/user/makeguest/:username', auth.required, function(req, res, next) 
     req.guestUser.role = 'guest';
     req.guestUser.save().then(function() {
       return res.json({user: req.guestUser});
-    }) 
+    })
   }).catch(next);
 });
 

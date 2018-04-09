@@ -17,7 +17,6 @@ router.get('/:videofile', function(req, res) {
       currentSettings = settings[0];
     }
     var path = path_var.join(__dirname, '../assets/' + req.params.videofile);
-    
     var stat;
     var fileSize;
     try {
@@ -35,11 +34,9 @@ router.get('/:videofile', function(req, res) {
       const end = parts[1]
         ? parseInt(parts[1], 10)
         : fileSize-1
-
-      
       if (start > fileSize - 1) {
           start = fileSize -1;
-      } 
+      }
 
       const chunksize = (end-start)+1;
       var file;
@@ -58,8 +55,6 @@ router.get('/:videofile', function(req, res) {
       catch(e) {
         console.log('file was not found' + e);
       }
-      
-      
     } else {
       const head = {
         'Content-Length': fileSize,
@@ -69,7 +64,6 @@ router.get('/:videofile', function(req, res) {
       fs.createReadStream(path).pipe(res)
     }
   })
-  
 });
 
 module.exports = router;
