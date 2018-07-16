@@ -22,7 +22,6 @@ app.use(function(req, res, next) { //allow cross origin requests
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static('assets'));
 app.use(bodyParser.json());
- 
 
 
 mongoose.connect(mongoDB, {
@@ -36,6 +35,12 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 require('./models/Video');
 require('./models/Settings');
 require('./models/User');
+require('./models/Acute');
+require('./models/Bench');
+require('./models/JobOffer');
+require('./models/Starter');
+require('./models/Stopper');
+require('./models/ListType');
 require('./config/passport');
 
 app.use(require('./routes'));
@@ -47,7 +52,7 @@ var storage = multer.diskStorage({ //multers disk storage settings
     },
     filename: function (req, file, cb) {
         var datetimestamp = Date.now();
-        cb(null, 'video_' + counter + '_' + file.originalname); 
+        cb(null, 'video_' + counter + '_' + file.originalname);
     }
 });
 
