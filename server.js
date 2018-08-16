@@ -65,8 +65,6 @@ var Settings = mongoose.model('Settings');
 
 app.post('/video/upload', cors(), function(req, res) {
     upload(req,res,function(err){
-        console.log('helloo');
-        console.log(req);
         Settings.find(function(err, settings) {
           var currentSettings;
           if (settings.length == 0) {
